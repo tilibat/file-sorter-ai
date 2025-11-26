@@ -18,7 +18,10 @@ try:
     WATCHDOG_AVAILABLE = True
 except ImportError:
     WATCHDOG_AVAILABLE = False
-    FileSystemEventHandler = object  # Заглушка для определения класса
+    # Заглушка для определения класса - используется object как базовый класс
+    # чтобы класс FileHandler мог быть определен без ошибок, даже если watchdog не установлен.
+    # Функциональность watchdog проверяется в runtime через WATCHDOG_AVAILABLE.
+    FileSystemEventHandler = object
     Observer = None
 
 import config

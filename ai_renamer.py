@@ -59,12 +59,11 @@ class AIRenamer:
         date = utils.get_current_date()
         
         # Формируем новое имя
+        # Примечание: когда use_ai == True, _generate_ai_name будет использовать OpenAI API
+        # для анализа содержимого файла. Пока что обе функции работают одинаково.
         if self.use_ai:
-            # TODO: В будущем здесь будет вызов OpenAI API
-            # для анализа содержимого файла и генерации умного имени
             new_name = self._generate_ai_name(file_path, original_name, category, date)
         else:
-            # Простой режим: дата_категория_оригинальное_имя
             new_name = self._generate_simple_name(original_name, category, date)
         
         return f"{new_name}{extension}"
@@ -176,8 +175,8 @@ class AIRenamer:
     
     def _generate_simple_name(self, original_name: str, category: str, date: str) -> str:
         """
-        Генерация простого имени: дата_категория_оригинал.
-        Generate simple name: date_category_original.
+        Генерация простого имени используя шаблон из конфигурации.
+        Generate simple name using template from config.
         
         Args:
             original_name: Оригинальное имя файла
@@ -190,8 +189,12 @@ class AIRenamer:
         # Очищаем имя категории (убираем кириллицу для совместимости)
         category_clean = self._transliterate(category)
         
-        # Формируем новое имя
-        return f"{date}_{category_clean}_{original_name}"
+        # Формируем новое имя используя шаблон из конфигурации
+        return config.RENAME_TEMPLATE.format(
+            date=date,
+            category=category_clean,
+            original=original_name
+        )
     
     def _generate_ai_name(self, file_path: str, original_name: str, 
                          category: str, date: str) -> str:
